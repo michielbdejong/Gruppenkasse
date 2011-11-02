@@ -17,7 +17,7 @@ return declare(null, {
 		var data, items = []
 		this.localStorageKey = args.localStorageKey
 		this.dataArrayKey = args.dataArrayKey
-		data = localStorage.getItem(args.localStorageKey)
+		data = remoteStorage.getItem(args.localStorageKey)
 		if(data){
 			items = JSON.parse(data)[args.dataArrayKey]
 		}
@@ -31,7 +31,7 @@ return declare(null, {
 	_save: function(){
 		var obj = {}
 		obj[this.dataArrayKey] = this.store.data
-		localStorage.setItem(this.localStorageKey, JSON.stringify(obj))
+		remoteStorage.setItem(this.localStorageKey, JSON.stringify(obj))
 	}
 
 })

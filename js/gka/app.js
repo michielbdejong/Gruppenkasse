@@ -8,39 +8,6 @@ return {
 	
 	store: store,
 	
-	refreshData: function(){
-		var xhr = new XMLHttpRequest()
-		xhr.open("GET", "data/badminton.json?nocache=" + (new Date()).getTime(), true);
-		xhr.onreadystatechange = function(){
-			var data
-			if(xhr.readyState == 4 && xhr.status == 200){
-				data = xhr.responseText
-				store.setData(JSON.parse(data).transactions)
-				localStorage.setItem("badminton", data)
-				alert("Daten erfolgreich geladen.")
-			}
-		}
-		xhr.send()
-	},
-	
-	postData: function(){
-		dojo.xhrPost({
-			url: "save.php",
-			postData: "data=" + localStorage.getItem("badminton"),
-			handleAs: "text",
-			load: function(data){
-				if(data == "success"){
-					alert("Erfolgreich hochgeladen.")
-				}else{
-					alert("Fehler.")
-				}
-			},
-			error: function(error){
-				alert("Fehler: " + error)
-			}
-		})
-	},
-	
 	getAccounts: function(transactions){
 		var costs = 0, share = 0, accounts = {}
 		transactions.forEach(function(transaction){
