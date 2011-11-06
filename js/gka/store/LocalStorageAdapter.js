@@ -9,29 +9,27 @@ return declare(null, {
 	
 	store: null,
 	
-	localStorageKey: "",
-	
-	dataArrayKey: "",
-	
-	constructor: function(args){
-		var data, items = []
-		this.localStorageKey = args.localStorageKey
-		this.dataArrayKey = args.dataArrayKey
-		data = remoteStorage.getItem(args.localStorageKey)
-		if(data){
-			items = JSON.parse(data)[args.dataArrayKey]
+	constructor: function(){
+		var index, key, items = []
+		index = JSON.parse(localStorage.getItem('_remoteStorageIndex'))
+		for(key in index){
+			items.push(JSON.parse(remoteStorage.getItem(key)))
 		}
 		this.store = new memoryStore({data: items})
 		this._connects = [
-			connect.connect(this.store, "put", this, "_save"),
-			connect.connect(this.store, "remove", this, "_save")
+			connect.connect(this.store, "put", this, "_put"),
+			connect.connect(this.store, "remove", this, "_remove")
 		]
 	},
 	
-	_save: function(){
-		var obj = {}
-		obj[this.dataArrayKey] = this.store.data
-		remoteStorage.setItem(this.localStorageKey, JSON.stringify(obj))
+	_put: function(object, options){
+		remoteStorage.setItem(object.id, JSON.stringify(object))
+console.log('remoteStorage.setItem(' + object.id + ', ' + JSON.stringify(object) + ')')
+	},
+	
+	_remove: function(id){
+		remoteStorage.removeItem(id)
+console.log('remoteStorage.removeItem(' + id + ')')
 	}
 
 })
