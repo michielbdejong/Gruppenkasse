@@ -683,11 +683,15 @@
           if(this.isConnected()) {
             work(0);
           }
+          var keysToRemove = [];
           for(var i=0;i<localStorage.length;i++) {
             if(localStorage.key(i).substring(0,15)=='_remoteStorage_') {
-              localStorage.removeItem(localStorage.key(i));
+              keysToRemove.push(localStorage.key(i));
             }
           }
+          keysToRemove.forEach(function(key) {
+              localStorage.removeItem(key);
+          });
         },
         connect: function(userAddress, dataScope) {
           backend.connect(userAddress, dataScope, function() {
@@ -706,16 +710,18 @@
           localStorage.removeItem('_remoteStorageDavAddress');
           localStorage.removeItem('_remoteStorageOauthToken');
           localStorage.removeItem('_remoteStorageIndex');
+          var keysToRemove = [];
           for(var i=0; i<localStorage.length; i++) {
             if(localStorage.key(i).substring(0,15)=='_remoteStorage_') {
-              var keyName = localStorage.key(i);
-              localStorage.removeItem(keyName);
-              if(window.remoteStorage.options.onChange) {
-                remoteStorage.options.onChange(keyName.substring(15), localStorage.getItem(keyName), null);
-              }
-              localStorage.removeItem(keyName);
+              keysToRemove.push(localStorage.key(i));
             }
           }
+          keysToRemove.forEach(function(key) {
+            if(window.remoteStorage.options.onChange) {
+              remoteStorage.options.onChange(key.substring(15), localStorage.getItem(key), null);
+            }
+            localStorage.removeItem(key);
+          });
         },
         _init: function() {
           backend.sync();
