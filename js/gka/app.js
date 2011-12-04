@@ -1,19 +1,38 @@
 define([
-	"gka/store/LocalStorageAdapter"
-], function(LSA){
+	"gka/store/LocalStorageAdapter",
+	"gka/viewController",
+	"gka/BoxView",
+	"gka/MainView",
+	"gka/NewEntryView",
+	"gka/SummaryView",
+	"gka/ListView",
+	"gka/DetailsView",
+	"dojo/_base/xhr",
+	"dojo/json"
+], function(LSA, viewController, BoxView, MainView, NewEntryView, SummaryView, ListView, DetailsView, xhr, json){
 
 var store = new LSA().store
 
-return {
+var obj = {
 	
+	box: "",
+
 	store: store,
+
+	init: function(){
+		var boxView = new BoxView({app: obj, controller: viewController})
+		viewController.addView(boxView)
+		viewController.addView(new MainView({app: obj, controller: viewController}))
+		viewController.addView(new NewEntryView({app: obj, controller: viewController}))
+		viewController.addView(new SummaryView({app: obj, controller: viewController}))
+		viewController.addView(new ListView({app: obj, controller: viewController}))
+		viewController.addView(new DetailsView({app: obj, controller: viewController}))
+		viewController.selectView(boxView)
+	},
 	
 	getAccounts: function(transactions){
 		var costs = 0, share = 0, accounts = {}
-		transactions.forEach(function(transaction){
-			if(!transaction.payments){
-				return
-			}
+		store.query({"box": obj.box}).forEach(function(transaction){
 			transaction.payments.forEach(function(payment){
 				costs += payment.amount
 				share = payment.amount / transaction.participants.length
@@ -37,5 +56,7 @@ return {
 		store.remove(id)
 	}
 }
+
+return obj
 
 })
