@@ -10,10 +10,12 @@ return declare(null, {
 	store: null,
 	
 	constructor: function(){
-		var index, key, items = []
-		index = JSON.parse(localStorage.getItem('_remoteStorageIndex'))
-		for(key in index){
-			items.push(JSON.parse(remoteStorage.getItem(key)))
+		var i = 0, l, key, items = []
+		for(l = localStorage.length; i < l; ++i){
+			key = localStorage.key(i)
+			if(key.indexOf("transaction_") === 0){
+				items.push(JSON.parse(localStorage.getItem(key)))
+			}
 		}
 		this.store = new memoryStore({data: items})
 		this._connects = [
@@ -23,13 +25,13 @@ return declare(null, {
 	},
 	
 	_put: function(object, options){
-		remoteStorage.setItem(object.id, JSON.stringify(object))
-console.log('remoteStorage.setItem(' + object.id + ', ' + JSON.stringify(object) + ')')
+		localStorage.setItem("transaction_" + object.id, JSON.stringify(object))
+console.log('localStorage.setItem(transaction_' + object.id + ', ' + JSON.stringify(object) + ')')
 	},
 	
 	_remove: function(id){
-		remoteStorage.removeItem(id)
-console.log('remoteStorage.removeItem(' + id + ')')
+		localStorage.removeItem("transaction_" + id)
+console.log('localStorage.removeItem(transaction_' + id + ')')
 	}
 
 })

@@ -6,8 +6,12 @@
 	<link rel="apple-touch-icon" href="apple-touch-icon.png">
 	<link rel="apple-touch-startup-image" href="splash.png">
 	<link rel="stylesheet" type="text/css" href="js/gka/css/style.css">
-	<link rel="stylesheet" type="text/css" href="remoteStorage.css">
-	<script type="text/javascript" src="js/remoteStorage.js"></script>
+	<script src="http://unhosted.org/remoteStorage.js">{
+		onChange: function(key, oldValue, newValue){
+			console.info("onChage called with key='" + key + "', oldValue='" + oldValue + "', and newValue='" + newValue + "'")
+		},
+		category: 'badminton'
+    }</script>
 	<script data-dojo-config="async:true" type="text/javascript" src="js/dojo/dojo.js"></script>
 	<script type="text/javascript">
 		require(["dojo/ready", "gka/app"], function(ready, app){
