@@ -21,8 +21,10 @@
 </head>
 <body>
   <script type="text/x-handlebars">
-    {{#view App.MyView}}
-      <h1>Hello world!</h1>
+    {{#view App.TransactionsView}}
+      {{#each App.transactionsController}}
+        <h3>{{title}}</h3>
+      {{/each}}
     {{/view}}
   </script>
 
