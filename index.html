@@ -20,12 +20,26 @@
   <![endif]-->
 </head>
 <body>
-  <script type="text/x-handlebars">
-    {{#view App.TransactionsView}}
-      {{#each App.transactionsController}}
-        <h3>{{title}}</h3>
+  <script type="text/x-handlebars" data-template-name="application">
+    <h1>Application</h1>
+    {{outlet}}
+  </script>
+  
+  <script type="text/x-handlebars" data-template-name="transactions">
+    <h2>Transactions</h2>
+    <table>
+      {{#each controller}}
+      <tr class="even odd" {{action showTransaction this href=true}}>
+        <td class="date">{{date}}<!--new Date(transaction.date).toLocaleDateString()--></td>
+        <td class="title">{{title}}</td>
+      </tr>
       {{/each}}
-    {{/view}}
+    </table>
+  </script>
+
+  <script type="text/x-handlebars" data-template-name="transaction">
+    <h2>Transaction</h2>
+    {{title}}
   </script>
 
   <!-- The missing protocol means that it will match the current protocol, either http or https. If running locally, we use the local jQuery. -->
