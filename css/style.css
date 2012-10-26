@@ -33,7 +33,10 @@ pre, code {
   background-color: #efefef;
   border: 1px solid #d3d3d3;
 }
-
+th {
+  text-align: left;
+  font-weight: normal;
+}
 
 body {
   font-size: 1em;

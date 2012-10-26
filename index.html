@@ -26,7 +26,7 @@
   
   <script type="text/x-handlebars" data-template-name="transactions">
     <div class="header">
-      <button>zurück</button>
+      <button {{action showAccounts}}>zurück</button>
       <button>+</button>
     </div>
     <h2>Alle Posten</h2>
@@ -53,6 +53,31 @@
       <p>{{title}}</p>
       <p>{{#each participants}}{{.}}, {{/each}}</p>
       <p>{{#each payments}}{{participant}}: {{currency amount}}, {{/each}}</p>
+    </div>
+  </script>
+
+  <script type="text/x-handlebars" data-template-name="accounts">
+    <h2>Kasse „<span data-dojo-attach-point="boxNameNode"></span>“</h2>
+    <div class="row">
+      <button>neuer Posten</button>
+    </div>
+    <div class="row">
+      <button {{action showTransactions}}>alle Posten auflisten</button>
+    </div>
+    <hr>
+    <div class="row">
+      <table>
+        {{#each controller.accounts}}
+        <tr>
+          <th class="account">{{participant}}:</th>
+          <td class="amount">{{balance}}</td>
+        </tr>
+        {{/each}}
+      </table>
+    </div>
+    <hr>
+    <div class="row">
+      <button>andere Kasse auswählen</button>
     </div>
   </script>
 

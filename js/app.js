@@ -32,22 +32,60 @@ App = Ember.Application.create({
   
   TransactionController: Ember.ObjectController.extend(),
   
+  AccountsView: Ember.View.extend({
+    templateName: 'accounts'
+  }),
+  
+  AccountsController: Ember.ArrayController.extend({
+    content: [],
+    accounts: [],
+    contentChanged: (function(){
+      var transactions = this.get('content').content;
+      var costs = 0, share = 0, accounts = {};
+      transactions.forEach(function(transaction){
+        transaction.payments.forEach(function(payment){
+          costs += payment.amount;
+          share = payment.amount / transaction.participants.length;
+          transaction.participants.forEach(function(participant){
+            accounts[participant] = accounts[participant] || 0;
+            accounts[participant] -= share;
+            if(payment.participant == participant){
+              accounts[participant] += payment.amount;
+            }
+          });
+        });
+      });
+      var accountList = [];
+      for(var participant in accounts){
+        accountList.push({participant: participant, balance: accounts[participant]});
+      }
+      this.set('accounts', accountList);
+    }).observes('content.@each')
+  }),
+  
   Router: Ember.Router.extend({
     enableLogging: true,
   //  goToCars: Ember.Route.transitionTo('cars'),
   //  goToShoes: Ember.Route.transitionTo('shoes.index'),
   //  goHome: Ember.Route.transitionTo('index'),
     root: Ember.Route.extend({
-      showTransactions: Ember.Route.transitionTo('index'),
+      showAccounts: Ember.Route.transitionTo('index'),
+      showTransactions: Ember.Route.transitionTo('transactions'),
       showTransaction: Ember.Route.transitionTo('transaction'),
       index: Ember.Route.extend({
         route: '/',
+        connectOutlets: function(router){
+          router.get('applicationController').connectOutlet('accounts', App.Transaction.find());
+        }
+      }),
+      transactions: Ember.Route.extend({
+        route: '/transactions',
         connectOutlets: function(router){
           router.get('applicationController').connectOutlet('transactions', App.Transaction.find());
         }
       }),
       transaction: Ember.Route.extend({
-        route: '/:transaction_id',
+        route: '/transactions/:transaction_id',
         // deserialize: function(router, context){
         //   var transactionsControllerContent = router.get('transactionsController').content;
         //   for(var i = 0, l = transactionsControllerContent.length; i < l; ++i){
@@ -137,17 +175,27 @@ App = Ember.Application.create({
     find: function(type, id) {
       var transactions = this.data;
       if(id){
+        var transactionModel = this.transactionModel;
+        if(transactionModel){
+          return transactionModel;
+        }
         for(var i = 0, l = transactions.length; i < l; ++i){
           var transaction = transactions[i];
           if(transaction.id === id){
-            return type.create(transaction);
+            transactionModel = this.transactionModel = type.create(transaction);
+            return transactionModel;
           }
         }
       } else {
-        var array = Ember.ArrayProxy.create({content: []});
+        var array = this.transactionArrayProxy;
+        if(array){
+          return array;
+        }
+        array = Ember.ArrayProxy.create({content: []});
         transactions.forEach(function(transaction){
           array.pushObject(type.create(transaction));
         });
+        this.transactionArrayProxy = array;
         return array;
       }
     }
