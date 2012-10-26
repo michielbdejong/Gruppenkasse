@@ -1,3 +1,12 @@
+Model = Ember.Object.extend();
+Model.reopenClass({
+  find: function(){
+    var args = [].slice.call(arguments);
+    args.unshift(this);
+    return App.store.find.apply(App.store, args);
+  }
+});
+
 App = Ember.Application.create({
   
   ApplicationView: Ember.View.extend({
@@ -6,10 +15,11 @@ App = Ember.Application.create({
   
   ApplicationController: Ember.Controller.extend(),
   
-  Transaction: Ember.Object.extend(),
+  Transaction: Model.extend(),
   
   TransactionsView: Ember.View.extend({
-    templateName: 'transactions'
+    templateName: 'transactions',
+    classNames: 'listView'
   }),
   
   TransactionsController: Ember.ArrayController.extend({
@@ -28,9 +38,10 @@ App = Ember.Application.create({
   //  goToShoes: Ember.Route.transitionTo('shoes.index'),
   //  goHome: Ember.Route.transitionTo('index'),
     root: Ember.Route.extend({
+      showTransactions: Ember.Route.transitionTo('index'),
+      showTransaction: Ember.Route.transitionTo('transaction'),
       index: Ember.Route.extend({
         route: '/',
-        showTransaction: Ember.Route.transitionTo('root.transaction'),
         connectOutlets: function(router){
           router.get('applicationController').connectOutlet('transactions', App.Transaction.find());
         }
@@ -101,35 +112,55 @@ App = Ember.Application.create({
       //   }
       // })
     })
-  })
-});
-
-App.Transaction.reopenClass({
-  find: function(id){
-    var prefix = 'gka_transaction_';
-    function doPrefix(key){
+  }),
+  store: Ember.Object.create({
+    localStoragePrefix: 'gka_transaction_',
+    doLocalStoragePrefix: function(key){
       return prefix + key;
-    }
-    function json2model(json){
-      var obj = JSON.parse(json);
-      var model = App.Transaction.create(obj);
-      return model;
-    }
-    if(id){
-      var json = localStorage.getItem(doPrefix(id));
-      return json2model(json);
-    }else{
-      var models = [];
+    },
+    init: function(){
+      this.loadData();
+    },
+    loadData: function(){
+      var prefix = this.localStoragePrefix;
+      var transactions = [];
       for(var i = 0, l = localStorage.length; i < l; ++i){
         var key = localStorage.key(i);
         if(key.indexOf(prefix) === 0){
           var json = localStorage.getItem(key);
-          models.push(json2model(json));
+          var transaction = JSON.parse(json);
+          transactions.push(transaction);
         }
       }
-      return models;
+      this.data = transactions;
+    },
+    find: function(type, id) {
+      var transactions = this.data;
+      if(id){
+        for(var i = 0, l = transactions.length; i < l; ++i){
+          var transaction = transactions[i];
+          if(transaction.id === id){
+            return type.create(transaction);
+          }
+        }
+      } else {
+        var array = Ember.ArrayProxy.create({content: []});
+        transactions.forEach(function(transaction){
+          array.pushObject(type.create(transaction));
+        });
+        return array;
+      }
     }
-  }
+  })
+});
+
+Handlebars.registerHelper('formatDate', function(property, options){
+  var value = Ember.Handlebars.get(this, property, options);
+  return new Date(value).toLocaleDateString();
+});
+Handlebars.registerHelper('currency', function(property, options){
+  var value = Ember.Handlebars.get(this, property, options);
+  return value.toFixed(2) + " €";
 });
 
 App.initialize();

@@ -21,25 +21,39 @@
 </head>
 <body>
   <script type="text/x-handlebars" data-template-name="application">
-    <h1>Application</h1>
     {{outlet}}
   </script>
   
   <script type="text/x-handlebars" data-template-name="transactions">
-    <h2>Transactions</h2>
-    <table>
-      {{#each controller}}
-      <tr class="even odd" {{action showTransaction this href=true}}>
-        <td class="date">{{date}}<!--new Date(transaction.date).toLocaleDateString()--></td>
-        <td class="title">{{title}}</td>
-      </tr>
-      {{/each}}
-    </table>
+    <div class="header">
+      <button>zurück</button>
+      <button>+</button>
+    </div>
+    <h2>Alle Posten</h2>
+    <div class="row">
+      <table>
+        {{#each controller}}
+        <tr {{action showTransaction this href=true}}>
+          <td class="date">{{formatDate date}}</td>
+          <td class="title">{{title}}</td>
+        </tr>
+        {{/each}}
+      </table>
+    </div>
   </script>
 
   <script type="text/x-handlebars" data-template-name="transaction">
-    <h2>Transaction</h2>
-    {{title}}
+    <div class="header">
+      <button {{action showTransactions}}>zurück</button>
+      <button>löschen</button>
+    </div>
+    <h2>Details</h2>
+    <div class="row">
+      <date>{{formatDate date}}</date>
+      <p>{{title}}</p>
+      <p>{{#each participants}}{{.}}, {{/each}}</p>
+      <p>{{#each payments}}{{participant}}: {{currency amount}}, {{/each}}</p>
+    </div>
   </script>
 
   <!-- The missing protocol means that it will match the current protocol, either http or https. If running locally, we use the local jQuery. -->
