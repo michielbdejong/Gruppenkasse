@@ -1,4 +1,11 @@
-Model = Ember.Object.extend();
+Model = Ember.Object.extend({
+  willDestroy: function(){
+    this.deleteRecord();
+  },
+  deleteRecord: function(){
+    App.store.deleteRecord(this.constructor, this.get('id'));
+  }
+});
 Model.reopenClass({
   find: function(){
     var args = [].slice.call(arguments);
@@ -72,6 +79,13 @@ App = Ember.Application.create({
       showAccounts: Ember.Route.transitionTo('index'),
       showTransactions: Ember.Route.transitionTo('transactions'),
       showTransaction: Ember.Route.transitionTo('transaction'),
+      deleteTransaction: function(router, event){
+        var transactionController = event.context;
+        var transactionModel = transactionController.get('content');
+        router.get('transactionsController').removeObject(transactionModel);
+        transactionModel.destroy();
+        router.transitionTo('transactions');
+      },
       index: Ember.Route.extend({
         route: '/',
         connectOutlets: function(router){
@@ -154,7 +168,7 @@ App = Ember.Application.create({
   store: Ember.Object.create({
     localStoragePrefix: 'gka_transaction_',
     doLocalStoragePrefix: function(key){
-      return prefix + key;
+      return this.localStoragePrefix + key;
     },
     init: function(){
       this.loadData();
@@ -198,6 +212,9 @@ App = Ember.Application.create({
         this.transactionArrayProxy = array;
         return array;
       }
+    },
+    deleteRecord: function(type, id){
+      localStorage.removeItem(this.doLocalStoragePrefix(id));
     }
   })
 });

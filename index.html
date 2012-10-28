@@ -45,7 +45,7 @@
   <script type="text/x-handlebars" data-template-name="transaction">
     <div class="header">
       <button {{action showTransactions}}>zurück</button>
-      <button>löschen</button>
+      <button {{action deleteTransaction this}}>löschen</button>
     </div>
     <h2>Details</h2>
     <div class="row">
