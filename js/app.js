@@ -75,7 +75,7 @@ App = Ember.Application.create({
     classNames: ['newEntryView']
   }),
   
-  NewEntryController: Ember.Controller.extend({
+  NewEntryController: Ember.ObjectController.extend({
     createNewTransaction: function(){
       var participants = this.get('participants').split(',');
       var payments = [];
@@ -92,6 +92,7 @@ App = Ember.Application.create({
         participants: participants,
         payments: payments
       });
+      this.set('content', null);
     }
   }),
   
@@ -135,7 +136,7 @@ App = Ember.Application.create({
       newTransaction: Ember.Route.extend({
         route: '/transactions/new',
         connectOutlets: function(router){
-          router.get('applicationController').connectOutlet('newEntry', App.Transaction.find());
+          router.get('applicationController').connectOutlet('newEntry', {});
         }
       })
     })
