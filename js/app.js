@@ -97,9 +97,6 @@ App = Ember.Application.create({
   
   Router: Ember.Router.extend({
     enableLogging: true,
-  //  goToCars: Ember.Route.transitionTo('cars'),
-  //  goToShoes: Ember.Route.transitionTo('shoes.index'),
-  //  goHome: Ember.Route.transitionTo('index'),
     root: Ember.Route.extend({
       showAccounts: Ember.Route.transitionTo('index'),
       showTransactions: Ember.Route.transitionTo('transactions'),
@@ -131,15 +128,6 @@ App = Ember.Application.create({
       }),
       transaction: Ember.Route.extend({
         route: '/transactions/:transaction_id',
-        // deserialize: function(router, context){
-        //   var transactionsControllerContent = router.get('transactionsController').content;
-        //   for(var i = 0, l = transactionsControllerContent.length; i < l; ++i){
-        //     var transaction = transactionsControllerContent[i];
-        //     if(transaction.get('id') === context.id){
-        //       return transaction;
-        //     }
-        //   }
-        // },
         connectOutlets: function(router, transaction){
           router.get('applicationController').connectOutlet('transaction', transaction);
         }
@@ -149,59 +137,10 @@ App = Ember.Application.create({
         connectOutlets: function(router){
           router.get('applicationController').connectOutlet('newEntry', App.Transaction.find());
         }
-      })//,
-      // shoes: Ember.Route.extend({
-      //   showShoe: Ember.Route.transitionTo('shoes.shoe'),
-      //   route: '/shoes',
-      //   index: Ember.Route.extend({
-      //     route: '/',
-      //     enter: function ( router ){
-      //       console.log("The shoes sub-state was entered.");
-      //     },
-      //     connectOutlets: function(router, context){
-      //       router.get('applicationController').connectOutlet('greeting', 'salutation',
-      //                                                         { greeting: "Shoes Route" });
-      //       router.get('applicationController').connectOutlet('body', 'shoes', App.Shoe.all());
-      //       router.get('applicationController').connectOutlet('footer', 'traversal');
-      //       router.get('traversalController').connectOutlet('home');
-      //     }
-      //   }),
-      //   shoe: Ember.Route.extend({
-      //     route: '/shoe/:id',
-      //     enter: function ( router ){
-      //       console.log("The shoe detail sub-state was entered.");
-      //     },
-      //     deserialize: function(router, context){
-      //       return App.Shoe.find( context.id );
-      //     },
-      //     serialize: function(router, context){
-      //       return {
-      //         id: context.id
-      //       }
-      //     },
-      //     connectOutlets: function(router, aShoe){
-      //       router.get('applicationController').connectOutlet('greeting', 'salutation',
-      //                                                         { greeting: "Shoes.Shoe Route" });
-      //       router.get('applicationController').connectOutlet('body', 'shoe', aShoe);
-      //       router.get('applicationController').connectOutlet('footer', 'traversal');
-      //     }
-      //   })
-      // }),
-      // cars: Ember.Route.extend({
-      //   route: '/cars',
-      //   enter: function ( router ){
-      //     console.log("The cars sub-state was entered.");
-      //   },
-      //   connectOutlets: function(router, context){
-      //     router.get('applicationController').connectOutlet('greeting', 'salutation',
-      //                                                       { greeting: "Cars Route" });
-      //     router.get('applicationController').connectOutlet('body', 'cars');
-      //     router.get('applicationController').connectOutlet('footer', 'traversal');
-      //     router.get('traversalController').connectOutlet('home');
-      //   }
-      // })
+      })
     })
   }),
+  
   store: Ember.Object.create({
     localStoragePrefix: 'gka_transaction_',
     doLocalStoragePrefix: function(key){
