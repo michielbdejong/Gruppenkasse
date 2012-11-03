@@ -27,7 +27,7 @@
   <script type="text/x-handlebars" data-template-name="transactions">
     <div class="header">
       <button {{action showAccounts}}>zurück</button>
-      <button>+</button>
+      <button {{action showNewTransaction}}>+</button>
     </div>
     <h2>Alle Posten</h2>
     <div class="row">
@@ -59,7 +59,7 @@
   <script type="text/x-handlebars" data-template-name="accounts">
     <h2>Kasse „<span data-dojo-attach-point="boxNameNode"></span>“</h2>
     <div class="row">
-      <button>neuer Posten</button>
+      <button {{action showNewTransaction}}>neuer Posten</button>
     </div>
     <div class="row">
       <button {{action showTransactions}}>alle Posten auflisten</button>
@@ -78,6 +78,54 @@
     <hr>
     <div class="row">
       <button>andere Kasse auswählen</button>
+    </div>
+  </script>
+  
+  <script type="text/x-handlebars" data-template-name="new-entry">
+    <div class="row">
+      <button>abbrechen</button>
+      <button {{action submitNewTransaction this}}>hinzufügen</button>
+    </div>
+    <h2>Neuer Posten</h2>
+    <div class="form">
+      <div class="form-row">
+        <div class="form-row-label">
+          <label for="newEntryTitle">Titel:</label>
+        </div>
+        <div class="form-row-input">
+          {{view Ember.TextField valueBinding="title"}}
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-row-label">
+          <label for="newEntryDate">Datum:</label>
+        </div>
+        <div class="form-row-input">
+          {{view Ember.TextField valueBinding="date"}}
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-row-label">
+          <label for="newEntryParticipants">Teilnehmer:</label>
+        </div>
+        <div class="form-row-input">
+          {{view Ember.TextField valueBinding="participants"}}
+        </div>
+        <div class="form-row-hint">
+          <span class="form-hint">(mit Kommas getrennte Werte)</span>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-row-label">
+          <label for="newEntryPayments">Zahlungsvorgänge:</label>
+        </div>
+        <div class="form-row-input">
+          {{view Ember.TextField valueBinding="payments"}}
+        </div>
+        <div class="form-row-hint">
+          <span class="form-hint">(z.B.: Dominik: 30, Julius: 12.5)</span>
+        </div>
+      </div>
     </div>
   </script>
 

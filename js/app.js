@@ -70,6 +70,33 @@ App = Ember.Application.create({
     }).observes('content.@each')
   }),
   
+  NewEntryView: Ember.View.extend({
+    templateName: 'new-entry',
+    classNames: ['newEntryView']
+  }),
+  
+  NewEntryController: Ember.ArrayController.extend({
+    content: [],
+    
+    createNewTransaction: function(){
+      var participants = this.get('participants').split(',');
+      var payments = [];
+      this.get('payments').split(',').forEach(function(payment){
+        var p = payment.split(':');
+        payments.push({participant: p[0], amount: parseFloat(p[1])});
+      });
+      this.pushObject(App.Transaction.create({
+        id: '' + new Date().getTime(),
+        box: 'this.app.box',
+        type: 'spending',
+        title: this.get('title'),
+        date: new Date(parseInt(this.get('date'), 10)).getTime(),
+        participants: participants,
+        payments: payments
+      }));
+    }
+  }),
+  
   Router: Ember.Router.extend({
     enableLogging: true,
   //  goToCars: Ember.Route.transitionTo('cars'),
@@ -79,12 +106,18 @@ App = Ember.Application.create({
       showAccounts: Ember.Route.transitionTo('index'),
       showTransactions: Ember.Route.transitionTo('transactions'),
       showTransaction: Ember.Route.transitionTo('transaction'),
+      showNewTransaction: Ember.Route.transitionTo('newTransaction'),
       deleteTransaction: function(router, event){
         var transactionController = event.context;
         var transactionModel = transactionController.get('content');
         router.get('transactionsController').removeObject(transactionModel);
         transactionModel.destroy();
         router.transitionTo('transactions');
+      },
+      submitNewTransaction: function(router, event){
+        var controller = event.context;
+        controller.createNewTransaction();
+        router.transitionTo('index');
       },
       index: Ember.Route.extend({
         route: '/',
@@ -111,6 +144,12 @@ App = Ember.Application.create({
         // },
         connectOutlets: function(router, transaction){
           router.get('applicationController').connectOutlet('transaction', transaction);
+        }
+      }),
+      newTransaction: Ember.Route.extend({
+        route: '/transactions/new',
+        connectOutlets: function(router){
+          router.get('applicationController').connectOutlet('newEntry', App.Transaction.find());
         }
       })//,
       // shoes: Ember.Route.extend({
