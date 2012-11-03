@@ -75,9 +75,7 @@ App = Ember.Application.create({
     classNames: ['newEntryView']
   }),
   
-  NewEntryController: Ember.ArrayController.extend({
-    content: [],
-    
+  NewEntryController: Ember.Controller.extend({
     createNewTransaction: function(){
       var participants = this.get('participants').split(',');
       var payments = [];
@@ -85,7 +83,7 @@ App = Ember.Application.create({
         var p = payment.split(':');
         payments.push({participant: p[0], amount: parseFloat(p[1])});
       });
-      this.pushObject(App.Transaction.create({
+      App.store.createRecord(App.Transaction, {
         id: '' + new Date().getTime(),
         box: 'this.app.box',
         type: 'spending',
@@ -93,7 +91,7 @@ App = Ember.Application.create({
         date: new Date(parseInt(this.get('date'), 10)).getTime(),
         participants: participants,
         payments: payments
-      }));
+      });
     }
   }),
   
@@ -251,6 +249,13 @@ App = Ember.Application.create({
         this.transactionArrayProxy = array;
         return array;
       }
+    },
+    createRecord: function(type, data){
+      var model = type.create(data);
+      var array = this.find(type);
+      array.pushObject(model);
+      var json = JSON.stringify(data);
+      localStorage.setItem(this.doLocalStoragePrefix(data.id), json);
     },
     deleteRecord: function(type, id){
       localStorage.removeItem(this.doLocalStoragePrefix(id));
