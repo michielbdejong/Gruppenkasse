@@ -64,7 +64,9 @@ return dojo.declare(_View, {
 	_getBoxes: function(){
 		var boxes = []
 		this.app.store.query(function(){return true}).forEach(function(t){
-			if(t.box && boxes.indexOf(t.box) === -1){
+			console.log('*** TRANS! ***');
+			console.log(t);
+                        if(t.box && boxes.indexOf(t.box) === -1){
 				boxes.push(t.box)
 			}
 		})
