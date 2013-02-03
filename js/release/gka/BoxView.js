@@ -68,6 +68,8 @@ return dojo.declare(_View, {
 			console.log(t);
                         if(t.box && boxes.indexOf(t.box) === -1){
 				boxes.push(t.box)
+				console.log('*** BOX! ***');
+			 	console.log(boxes);
 			}
 		})
 		return this._boxes = boxes
