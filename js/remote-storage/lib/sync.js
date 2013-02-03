@@ -1,8 +1,8 @@
 /*global localStorage */
 
 define([
-  './util', './store', './store/remoteCache'
-], function(util, store, remoteCacheAdapter) {
+  './util', './store', './store/remoteCache', './wireClient'
+], function(util, store, remoteCacheAdapter, wireClient) {
 
   "use strict";
 
@@ -242,6 +242,26 @@ define([
         });
       }, promise.fulfill.bind(promise));
     });
+  }
+
+  // Function: updateDataNode
+  //
+  // Sync a single data node, bypassing cache. Used by <BaseClient> to
+  // fetch pending nodes.
+  //
+  function updateDataNode(path, localNode) {
+    if(localNode) {
+      return wireClient.set(path, localNode.data, localNode.mimeType).
+        then(function() {
+          remoteAdapter.expireKey(path);
+        });
+    } else {
+      return remoteAdapter.get(path).
+        then(function(node) {
+          remoteAdapter.expireKey(path);
+          return node;
+        });
+    }
   }
 
 
@@ -725,7 +745,7 @@ define([
           logger.debug('findNextForceRoots check', path + key, childNode);
           if(childNode.startForce || childNode.startForceTree) {
             roots.push(path + key);
-          } else {
+          } else if(util.isDir(key)) {
             return findNextForceRoots(path + key, childNode).
               then(function(innerRoots) {
                 innerRoots.forEach(function(innerRoot) {
@@ -799,7 +819,7 @@ define([
         function determineForce() {
           logger.debug('determineForce', options);
           var force = (options.force || options.forceTree);
-          if((! force) && options.path == '/' || options.path == '/public/') {
+          if((! force) && (options.path == '/' || options.path == '/public/')) {
             findNextForceRoots(options.path).
               then(function(roots) {
                 logger.debug('local interest', options.path, node, false, 'next: ', roots);
@@ -947,6 +967,8 @@ define([
     disable: disable,
 
     getQueue: function() { return taskQueue; },
+
+    updateDataNode: updateDataNode,
 
     lastSyncAt: null,
 
