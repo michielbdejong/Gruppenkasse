@@ -6,7 +6,7 @@ define([
 	"gka/NewEntryView",
 	"gka/ListView",
 	"gka/DetailsView",
-	"remote-storage/remoteStorage"
+	"remote-storage/remotestorage"
 ], function(RemoteStorageAdapter, viewController, BoxView, MainView, NewEntryView, ListView, DetailsView, remoteStorage){
 
 var store = new RemoteStorageAdapter().store

@@ -1,5 +1,5 @@
 define([
-	"remote-storage/remoteStorage"
+	"remote-storage/remotestorage"
 ], function(remoteStorage){
 
 var moduleName = "gruppenkasse"
